@@ -14,7 +14,7 @@ def initialize_database():
     """
     import databases.axion.models.primaries
 
-    # Base.metadata.drop_all(bind=db.get_engine()) # Delete all tables if they exist
+    #Base.metadata.drop_all(bind=db.get_engine()) # Delete all tables if they exist
     Base.metadata.create_all(bind=db.get_engine()) # Create tables if they do not exist
 
 def get_session():

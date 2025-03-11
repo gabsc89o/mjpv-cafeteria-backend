@@ -20,3 +20,5 @@ class Producto(Base):
     descripcion = Column(String)
     precio = Column(Float, nullable=False)
     imagen_url = Column(String)
+
+    detalles = relationship("DetalleFactura", back_populates="producto")
