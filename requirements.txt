@@ -18,3 +18,4 @@ ldap3
 ping3
 pyOpenSSL==24.3.0
 pillow
+pydantic
