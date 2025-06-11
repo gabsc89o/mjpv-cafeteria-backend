@@ -10,6 +10,7 @@ class Producto(BaseModel):
     id: Optional[int] = None
     nombre: str
     descripcion: Optional[str] = None
+    category: Literal["food", "drink"]
     precio: float
     imagen_url: Optional[str] = None
 
@@ -29,4 +30,5 @@ class RequestProducto(BaseModel):
     nombre: str
     descripcion: Optional[str] = None
     precio: float
+    category: Literal["food", "drink"]
     imagen_url: Optional[str] = None

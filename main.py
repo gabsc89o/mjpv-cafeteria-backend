@@ -11,6 +11,7 @@ from contextlib import asynccontextmanager
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from config import FRONTEND_API_URL
 from databases.axion.init_db import initialize_database
@@ -18,6 +19,8 @@ from routers.directory import redirect_to_endpoints
 
 app = FastAPI()
 
+# Montar la carpeta de imágenes
+app.mount("/images", StaticFiles(directory="images"), name="images")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[FRONTEND_API_URL],

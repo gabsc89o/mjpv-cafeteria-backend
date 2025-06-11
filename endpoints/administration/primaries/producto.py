@@ -73,7 +73,7 @@ async def create_item(
     db: Session = Depends(get_session),
     file: UploadFile = File(...))-> ItemSchema:
     """
-    Create an item.
+    Create an item. El precio en decimales usa punto.
 
     Args:
         item (RequestItemSchema): The item data.

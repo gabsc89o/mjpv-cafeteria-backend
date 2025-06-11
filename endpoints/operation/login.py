@@ -11,20 +11,19 @@ import traceback
 from datetime import datetime, timedelta, timezone
 from typing import Annotated, List
 
-from fastapi import (APIRouter, Depends, HTTPException, Path, Query, Request,
-                     status)
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from passlib.context import CryptContext
-from sqlalchemy.orm import Session
-
 from databases.axion.handlers.primaries.LocalUser import \
     LocalUser as LocalUserHandler
 from databases.axion.init_db import get_session
 from databases.axion.schemas.primaries.LocalUser import \
     LocalUser as LocalUserSchema
 from databases.axion.schemas.primaries.LocalUser import RequestLocalUser
+from fastapi import (APIRouter, Depends, HTTPException, Path, Query, Request,
+                     status)
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from modules.login.schemas import Token, TokenData
 from modules.login.utils import create_access_token, verify_password
+from passlib.context import CryptContext
+from sqlalchemy.orm import Session
 
 from ..shared.CustomLogger import CustomLogger
 
@@ -33,11 +32,12 @@ logger = CustomLogger('operation/login')
 router = APIRouter()
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 200
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
 @router.post("", response_model=Token)
 async def login(
     request: Request,
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_session)
 ) -> Token:
     """
@@ -69,10 +69,12 @@ async def login(
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
         access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-        access_token = create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
+        isAdmin = False
+        if username == 'admin':
+            isAdmin = True
+        access_token = create_access_token(data={"sub": user.username, "isAdmin": isAdmin}, expires_delta=access_token_expires)
         
         logger.info(f"[login] User {username} successfully logged in from IP: {client_ip}")
-
         return Token(access_token=access_token, token_type="bearer")
 
     except HTTPException as httpe:

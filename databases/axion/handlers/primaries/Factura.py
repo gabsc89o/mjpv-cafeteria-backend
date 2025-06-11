@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 
 from databases.axion.handlers.primaries.DetalleFactura import DetalleFactura
+from databases.axion.models.primaries.CierreCaja import \
+    CierreCaja as CierreCajaModel
 from databases.axion.models.primaries.Factura import Factura as FacturaModel
 from databases.axion.schemas.primaries.Factura import (FacturaSchema,
                                                        RequestFactura)
@@ -24,8 +26,20 @@ class Factura:
             db.add(_factura)
             db.commit()
             db.refresh(_factura)
-
-        # Actualizar la relación de detalles
+            _cierre_caja = db.query(CierreCajaModel).order_by(
+                CierreCajaModel.id.desc()).first()
+            if _cierre_caja is None or _cierre_caja.is_closed:
+                # Crear un nuevo cierre de caja si no existe o si el último está cerrado
+                _cierre_caja = CierreCajaModel(
+                    fecha=factura.fecha,
+                    is_closed=False,
+                    id_factura_inicial=_factura.id,
+                    total_ventas=0
+                )
+                db.add(_cierre_caja)
+                db.commit()
+                db.refresh(_cierre_caja)
+            # Actualizar la relación de detalles
             for detalle_id in factura.detalle_ids:
                 _detalle = DetalleFactura().get_detalle_factura_by_id(db, detalle_id)
                 _detalle.factura_id = _factura.id

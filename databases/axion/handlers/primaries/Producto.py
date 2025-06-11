@@ -28,7 +28,7 @@ class Producto:
             DatabaseException: If an error occurs while creating the item.
         """
         try:
-            _item = ItemModel(nombre=item.nombre, descripcion=item.descripcion, precio=item.precio, imagen_url=item.imagen_url)
+            _item = ItemModel(nombre=item.nombre, descripcion=item.descripcion, category=item.category, precio=item.precio, imagen_url=item.imagen_url)
             db.add(_item)
             db.commit()
             db.refresh(_item)
@@ -58,6 +58,7 @@ class Producto:
                 raise DatabaseException(f"Item with id {item.id} not found")
             _item.nombre = item.nombre
             _item.descripcion = item.descripcion
+            _item.category = item.category
             _item.precio = item.precio
             db.commit()
             db.refresh(_item)

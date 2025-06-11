@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class DetalleFacturaSchema(BaseModel):
@@ -11,16 +11,28 @@ class DetalleFacturaSchema(BaseModel):
     precio_unitario: float
     precio_final: float
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(
+        from_attributes=True
+    )
+
+    @classmethod
+    def from_orm(cls, obj):
+        # Deprecated, use model_validate instead
+        return cls.model_validate(obj)
 
 class FacturaSchema(BaseModel):
     id: int
     fecha: datetime
     total: float
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(
+        from_attributes=True
+    )
+
+    @classmethod
+    def from_orm(cls, obj):
+        # Deprecated, use model_validate instead
+        return cls.model_validate(obj)
 
 class RequestDetalleFactura(BaseModel):
     producto_id: int
